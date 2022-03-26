@@ -6,13 +6,16 @@ using TMPro;
 /// <summary>
 /// Labels tile coordinates as 2D Cartesian Coordinate System
 /// </summary>
-[ExecuteAlways][RequireComponent(typeof(TMP_Text))]
+[ExecuteAlways]
+[RequireComponent(typeof(TMP_Text))]
 public class CoordinateLabeler : MonoBehaviour
 {
     #region Serialized Fields
 
     [SerializeField] private Color _defaultColor = Color.white;
     [SerializeField] private Color _blockedColor = Color.gray;
+    [SerializeField] private Color _exploredColor = Color.yellow;
+    [SerializeField] private Color _pathColor = new Color(1F, 0.6F, 0);
 
     #endregion
 
@@ -20,8 +23,8 @@ public class CoordinateLabeler : MonoBehaviour
 
     TMP_Text _label;
     Vector2 _parentLocation = new Vector2Int();
+    private GridManager _gridManager;
     private string _locationStr;
-    private Waypoint _parentWaypoint;
 
     #endregion
 
@@ -53,11 +56,7 @@ public class CoordinateLabeler : MonoBehaviour
         }
 
         DisplayCoordinates();
-        if (!_parentWaypoint.IsPlaceable)
-        {
-            SetBlockedColor();
-        }
-
+        SetBlockedColor();
         ToggleLabels(KeyCode.L);
     }
 
@@ -102,7 +101,7 @@ public class CoordinateLabeler : MonoBehaviour
     void GetExteriorDependencies()
     {
         //Get Waypoint from parent
-        _parentWaypoint = GetComponentInParent<Waypoint>();
+        _gridManager = FindObjectOfType<GridManager>();
     }
 
     /// <summary>
@@ -121,7 +120,16 @@ public class CoordinateLabeler : MonoBehaviour
     /// </summary>
     void SetBlockedColor()
     {
+        Node node = _gridManager.GetNode(Vector2Int.RoundToInt(_parentLocation));
+        if (node is null) return;
+
+        if (node._isWalkable) return;
         _label.color = _blockedColor;
+
+        if (!node._isInPath) return;
+        _label.color = _pathColor;
+        if (!node._isExplored) return;
+        _label.color = _exploredColor;
     }
 
     /// <summary>
