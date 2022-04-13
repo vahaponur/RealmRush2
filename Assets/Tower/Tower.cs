@@ -9,6 +9,8 @@ public class Tower : MonoBehaviour
     #region Serialized Fields
 
     [SerializeField] private int _towerCost = 75;
+    [Tooltip("Build delay between tower childs")]
+    [SerializeField] private float _buildDelay = 1f;
 
     #endregion
 
@@ -30,7 +32,7 @@ public class Tower : MonoBehaviour
 
     void Start()
     {
-        
+        StartCoroutine(Build());
     }
 
 
@@ -66,5 +68,15 @@ public class Tower : MonoBehaviour
         return _bank.Withdraw(_towerCost);
     }
 
+    IEnumerator Build()
+    {
+        gameObject.transform.GetAllChildGameObjects().DisableAll();
+        foreach (Transform child in transform)
+        {
+            yield return new WaitForSeconds(_buildDelay);
+            child.gameObject.SetActive(true);
+        }
+        
+    }
     #endregion
 }

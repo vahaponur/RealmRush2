@@ -22,9 +22,11 @@ public class EnemyMover : MonoBehaviour
     /// <summary>
     /// Path of enemy
     /// </summary>
-    private List<Waypoint> _path;
+    private List<Node> _path = new List<Node>();
 
     private Enemy _enemyMain;
+    private GridManager _gridManager;
+    private Pathfinder _pathfinder;
 
     #endregion
 
@@ -37,13 +39,17 @@ public class EnemyMover : MonoBehaviour
     private void Awake()
     {
         _enemyMain = GetComponent<Enemy>();
+        _gridManager = FindObjectOfType<GridManager>();
+        _pathfinder = FindObjectOfType<Pathfinder>();
+        
+        
     }
 
     void OnEnable()
     {
-        FindPath();
         ReturnToStart();
-        StartCoroutine(FollowPath());
+        RecalculatePath(true);
+        
     }
 
     #endregion
@@ -60,16 +66,19 @@ public class EnemyMover : MonoBehaviour
     /// <returns>Null</returns>
     IEnumerator FollowPath()
     {
-        foreach (Waypoint waypoint in _path)
+      
+
+        for (int i = 1; i < _path.Count; i++)
         {
             Vector3 startPos = transform.position;
+            Vector3 endPos = _gridManager.GetPositionFromCoordinates(_path[i].coordinates);
             float travelPercent = 0f;
-            transform.LookAt(waypoint.transform.position);
+            transform.LookAt(endPos);
 
             while (travelPercent < 1f)
             {
                 travelPercent += Time.deltaTime * _speed;
-                transform.position = Vector3.Lerp(startPos, waypoint.transform.position, travelPercent);
+                transform.position = Vector3.Lerp(startPos, endPos, travelPercent);
                 yield return new WaitForEndOfFrame();
             }
         }
@@ -80,10 +89,14 @@ public class EnemyMover : MonoBehaviour
     /// <summary>
     /// Finds the path for enemy on the current level
     /// </summary>
-    void FindPath()
+    void RecalculatePath(bool resetPath)
     {
-        var pathObjects = GameObject.FindGameObjectWithTag("Path").transform.GetAllChildGameObjects();
-        _path = pathObjects.GetComponentAll<Waypoint>().ToList();
+        Vector2Int coordinates = resetPath ? _pathfinder.StartCoordinates : _gridManager.GetCoordinatesFromPosition(transform.position);
+        StopAllCoroutines();
+      _path.Clear();
+      _path = _pathfinder.GetNewPath(coordinates);
+      StartCoroutine(FollowPath());
+      
     }
 
     /// <summary>
@@ -91,7 +104,7 @@ public class EnemyMover : MonoBehaviour
     /// </summary>
     void ReturnToStart()
     {
-        transform.position = _path[0].transform.position;
+        transform.position = _gridManager.GetPositionFromCoordinates(_pathfinder.StartCoordinates);
     }
 
     /// <summary>

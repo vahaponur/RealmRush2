@@ -73,8 +73,9 @@ public class CoordinateLabeler : MonoBehaviour
     /// </summary>
     void DisplayCoordinates()
     {
-        _parentLocation.x = Mathf.RoundToInt(transform.parent.position.x / UnityEditor.EditorSnapSettings.move.x);
-        _parentLocation.y = Mathf.RoundToInt(transform.parent.position.z / UnityEditor.EditorSnapSettings.move.z);
+        if(_gridManager is null) return;
+        _parentLocation.x = Mathf.RoundToInt(transform.parent.position.x / _gridManager.UnityGridSize);
+        _parentLocation.y = Mathf.RoundToInt(transform.parent.position.z / _gridManager.UnityGridSize);
         _locationStr = $"({_parentLocation.x}, {_parentLocation.y})";
         _label.text = _locationStr;
     }
@@ -123,13 +124,23 @@ public class CoordinateLabeler : MonoBehaviour
         Node node = _gridManager.GetNode(Vector2Int.RoundToInt(_parentLocation));
         if (node is null) return;
 
-        if (node._isWalkable) return;
-        _label.color = _blockedColor;
+        if (!node.isWalkable)
+        {
+            _label.color = _blockedColor;
 
-        if (!node._isInPath) return;
-        _label.color = _pathColor;
-        if (!node._isExplored) return;
-        _label.color = _exploredColor;
+        }
+        else if(node.isInPath)
+        {
+            _label.color = _pathColor;
+        }
+        else if (node.isExplored)
+        {
+            _label.color = _exploredColor;
+ 
+        }
+    
+      
+   
     }
 
     /// <summary>

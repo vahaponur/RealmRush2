@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7861130759544480737}
   - component: {fileID: 5030370815538469547}
   - component: {fileID: 8424772259650649663}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 3650974520480508090}
   - component: {fileID: 4620553633965455862}
   - component: {fileID: 2296099097718608163}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Tile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -154,7 +154,7 @@ GameObject:
   - component: {fileID: 3650974520878139583}
   - component: {fileID: 3650974520878139580}
   - component: {fileID: 2830026440295564561}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: CoordinateText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -327,3 +327,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _defaultColor: {r: 1, g: 1, b: 1, a: 1}
   _blockedColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _exploredColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  _pathColor: {r: 1, g: 0.6, b: 0, a: 1}
